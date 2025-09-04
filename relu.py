@@ -42,7 +42,7 @@ def run_benchmark(
     else:
         for i in range(warmup):
             _ = perf_func(x)
-    torch.cuda.sychronize()
+    torch.cuda.synchronize()
 
     # iter
     start = time.time()
@@ -51,14 +51,14 @@ def run_benchmark(
             perf_func(x, out)
     else:
         for i in range(iters):
-            _ = perf_func(x)   
-    torch.cuda.sychronize()
+            out = perf_func(x)   
+    torch.cuda.synchronize()
     end = time.time()
 
     total_time = (end - start) * 1000
     mean_time = total_time / iters
     out_info = f"out_{tag}"
-    out_val = out.flatten().deatch().cpu().numpy().tolist()[:2]
+    out_val = out.flatten().detach().cpu().numpy().tolist()[:2]
     out_val = [round(v,8) for v in out_val]
     out_val = [f"{v:<12}" for v in out_val]
     print(f"{out_info:>18}: {out_val}, time:{mean_time:.8f}ms")
@@ -78,10 +78,13 @@ for x_dim, y_dim in (xy_dim):
     input_x = torch.randn((x_dim, y_dim)).cuda().float().contiguous()
     output_y = torch.zeros_like(input_x).cuda().float().contiguous()
 
-    lib.relu_f32(input_x, output_y)
-    th_out = torch.relu(input_x)
+    run_benchmark(lib.relu_f32, input_x, "f32", output_y)
+    run_benchmark(torch.relu, input_x, "f32_th")
 
-    print(output_y[:5])
-    print(th_out[:5])
+    # lib.relu_f32(input_x, output_y)
+    # th_out = torch.relu(input_x)
+
+    # print(output_y[:5])
+    # print(th_out[:5])
 
     print('...')
