@@ -116,9 +116,9 @@ def eval_tokenizer():
     tokenizer = AutoTokenizer.from_pretrained("../model/")
 
     messages = [
-        {"role": "system", "content": "你是一个优秀的聊天机器人，总是给我正确的回应！"},
-        {"role": "user", "content": '你来自哪里？'},
-        {"role": "assistant", "content": '我来自地球'}
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": 'Where are you from?'},
+        {"role": "assistant", "content": 'I am from Earth.'}
     ]
     new_prompt = tokenizer.apply_chat_template(
         messages,
